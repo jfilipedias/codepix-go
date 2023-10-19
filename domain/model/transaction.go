@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	TransactionPendding string = "pendding"
+	TransactionPendding  string = "pendding"
 	TransactionCompleted string = "completed"
-	TransactionError string = "error"
+	TransactionError     string = "error"
 	TransactionConfirmed string = "confirmed"
 )
 
@@ -25,14 +25,16 @@ type TransationRepositoryInterface interface {
 	FindById(id string) (*Transaction, error)
 }
 
-type Transaction struct { 
-	Base `valid:"required"`
-	AccountFrom *Account `valid:"required"`
-	Amount float64 `json:"amount" valid:"notnull"`
-	PixKeyTo *PixKey `valid:"-"`
-	Status string `json:"status" valid:"notnull"`
-	Description string `json:"description" valid:"notnull"`
-	CancelDescription string `json:"cancel_description" valid:"-"`
+type Transaction struct {
+	Base              `valid:"required"`
+	AccountFrom       *Account `valid:"required"`
+	AccountFromID     string   `gorm:"column:account_from_id;type:uuid;" valid:"notnull"`
+	Amount            float64  `json:"amount" gorm:"type:float" valid:"notnull"`
+	PixKeyTo          *PixKey  `valid:"-"`
+	PixKeyToID        string   `gorm:"column:pix_key_to_id;type:uuid;" valid:"notnull"`
+	Status            string   `json:"status" gorm:"type:varchar(20)" valid:"notnull"`
+	Description       string   `json:"description" gorm:"type:varchar(255)" valid:"notnull"`
+	CancelDescription string   `json:"cancel_description" gorm:"type:varchar(255)" valid:"-"`
 }
 
 func (transaction *Transaction) IsValid() error {
@@ -82,14 +84,13 @@ func (transation *Transaction) Cancel(description string) error {
 	return err
 }
 
-
 func NewTransaction(accountFrom *Account, amount float64, pixKeyTo *PixKey, description string) (*Transaction, error) {
 	transaction := Transaction{
 		AccountFrom: accountFrom,
-		Amount: amount,
-		PixKeyTo: pixKeyTo,
+		Amount:      amount,
+		PixKeyTo:    pixKeyTo,
 		Description: description,
-		Status: TransactionPendding,
+		Status:      TransactionPendding,
 	}
 
 	transaction.ID = uuid.NewV4().String()

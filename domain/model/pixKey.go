@@ -9,23 +9,24 @@ import (
 )
 
 type PixKeyRepositoryInterface interface {
-	Register(pixKey *PixKey) (*PixKey, error)
-	FindKeyByKind(key string, kind string) (*PixKey, error)
 	AddBank(bank *Bank) error
 	AddAccount(account *Account) error
-	FindAccount(id string) (*Account, error)
+	Register(pixKey *PixKey) (*PixKey, error)
+	FindKeyByKind(key string, kind string) (*PixKey, error)
+	FindAccountById(id string) (*Account, error)
+	FindBankById(id string) (*Bank, error)
 }
 
 type PixKey struct {
-	Base `valid:"required"`
-	Kind string `json:"kind" valid:"notnull"`
-	Key string `json:"key" valid:"notnull"`
-	AccountID string `json:"account_id" valid:"notnull"`
-	Account *Account `valid:"-"`
-	Status string `json:"status" valid:"notnull"`
+	Base      `valid:"required"`
+	Kind      string   `json:"kind" valid:"notnull"`
+	Key       string   `json:"key" valid:"notnull"`
+	Account   *Account `valid:"-"`
+	AccountID string   `gorm:"column:account_id;type:uuid;not null" valid:"-"`
+	Status    string   `json:"status" valid:"notnull"`
 }
 
-func (pixKey *PixKey) IsValid() error { 
+func (pixKey *PixKey) IsValid() error {
 	_, err := govalidator.ValidateStruct(pixKey)
 
 	if pixKey.Kind != "email" && pixKey.Kind != "cpf" {
@@ -43,12 +44,12 @@ func (pixKey *PixKey) IsValid() error {
 	return nil
 }
 
-func NewPixKey(account *Account, kind string, key string) (*PixKey, error) {
+func NewPixKey(key string, kind string, account *Account) (*PixKey, error) {
 	pixKey := PixKey{
 		Account: account,
-		Kind: kind,
-		Key: key,
-		Status: "active",
+		Kind:    kind,
+		Key:     key,
+		Status:  "active",
 	}
 
 	pixKey.ID = uuid.NewV4().String()

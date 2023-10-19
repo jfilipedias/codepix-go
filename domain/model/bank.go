@@ -8,10 +8,10 @@ import (
 )
 
 type Bank struct {
-	Base `valid:"required"`
-	Code string `json:"code" valid:"notnull"`
-	Name string `json:"name" valid:"notnull"`
-	Accounts []*Account `valid:"-"`
+	Base     `valid:"required"`
+	Code     string     `json:"code" gorm:"type:varchar(20)" valid:"notnull"`
+	Name     string     `json:"name" gorm:"type:varchar(255)" valid:"notnull"`
+	Accounts []*Account ` gorm:"ForeingKey:BankID" valid:"-"`
 }
 
 func (bank *Bank) IsValid() error {
@@ -26,7 +26,7 @@ func (bank *Bank) IsValid() error {
 
 func NewBank(code string, name string) (*Bank, error) {
 	bank := Bank{
-		Code: code,	
+		Code: code,
 		Name: name,
 	}
 

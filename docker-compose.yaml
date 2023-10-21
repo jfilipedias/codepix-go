@@ -7,7 +7,7 @@ services:
       - .:/go/src/
 
   db:
-    image: postgres:9.4
+    image: postgres:13-alpine
     restart: always
     tty: true
     volumes:
@@ -17,6 +17,17 @@ services:
       - POSTGRES_DB=codepix
     ports:
       - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:7.6
+    tty: true
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@user.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+    ports:
+      - "9000:80"
+    depends_on:
+      - db
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -66,14 +77,3 @@ services:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: 'kafka:9092'
       CONTROL_CENTER_REPLICATION_FACTOR: 1
       PORT: 9021
-
-  pgadmin:
-    image: dpage/pgadmin4
-    tty: true
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@user.com
-      - PGADMIN_DEFAULT_PASSWORD=123456
-    ports:
-      - "9000:80"
-    depends_on:
-      - db

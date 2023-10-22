@@ -3,48 +3,50 @@ package db
 import (
 	"log"
 	"os"
-	"path/filepath"
-	"runtime"
 
 	"github.com/jfilipedias/codepix-go/domain/model"
 
-	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
-	_ "gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func init() {
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-
-	err := godotenv.Load(basepath + "/../../.env")
-
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env files")
+		log.Fatal("Error loading .env file")
 	}
 }
 
-func ConnectDB(env string) *gorm.DB {
+func ConnectDB() *gorm.DB {
 	var dsn string
 	var db *gorm.DB
 	var err error
+	var newLogger logger.Interface
+
+	env := os.Getenv("env")
+
+	if os.Getenv("debug") == "true" {
+		newLogger = logger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), logger.Config{})
+	}
 
 	if env != "test" {
-		dsn = os.Getenv("dsn")
-		db, err = gorm.Open(os.Getenv("dbType"), dsn)
+		dsn = os.Getenv("dns")
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			Logger: newLogger,
+		})
 	} else {
-		dsn = os.Getenv("dsnTest")
-		db, err = gorm.Open(os.Getenv("dbTypeTest"), dsn)
+		dsn = os.Getenv("dns")
+		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{
+			Logger: newLogger,
+		})
 	}
 
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 		panic(err)
-	}
-
-	if os.Getenv("debug") == "true" {
-		db.LogMode(true)
 	}
 
 	if os.Getenv("AutoMigrateDb") == "true" {

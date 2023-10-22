@@ -11,7 +11,7 @@ import (
 type PixKeyRepositoryInterface interface {
 	AddBank(bank *Bank) error
 	AddAccount(account *Account) error
-	Register(pixKey *PixKey) (*PixKey, error)
+	RegisterKey(pixKey *PixKey) (*PixKey, error)
 	FindKeyByKind(key string, kind string) (*PixKey, error)
 	FindAccountById(id string) (*Account, error)
 	FindBankById(id string) (*Bank, error)

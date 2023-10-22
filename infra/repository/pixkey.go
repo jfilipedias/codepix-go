@@ -11,39 +11,32 @@ type PixKeyRepositoryDb struct {
 	Db *gorm.DB
 }
 
-func (repository *PixKeyRepositoryDb) AddBank(bank *model.Bank) error {
+func (repository PixKeyRepositoryDb) AddBank(bank *model.Bank) error {
 	err := repository.Db.Create(bank).Error
-
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
-func (repository *PixKeyRepositoryDb) AddAccount(accound *model.Account) error {
-	err := repository.Db.Create(accound).Error
-
+func (repository PixKeyRepositoryDb) AddAccount(account *model.Account) error {
+	err := repository.Db.Create(account).Error
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
-func (repository *PixKeyRepositoryDb) RegisterKey(pixKey *model.PixKey) error {
+func (repository PixKeyRepositoryDb) RegisterKey(pixKey *model.PixKey) (*model.PixKey, error) {
 	err := repository.Db.Create(pixKey).Error
-
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	return nil
+	return pixKey, nil
 }
 
-func (repository *PixKeyRepositoryDb) FindKeyByKind(key string, kind string) (*model.PixKey, error) {
+func (repository PixKeyRepositoryDb) FindKeyByKind(key string, kind string) (*model.PixKey, error) {
 	var pixKey model.PixKey
-
 	repository.Db.Preload("Account.Bank").First(&pixKey, "kind = ? and key = ?", kind, key)
 
 	if pixKey.ID == "" {
@@ -53,9 +46,8 @@ func (repository *PixKeyRepositoryDb) FindKeyByKind(key string, kind string) (*m
 	return &pixKey, nil
 }
 
-func (repository *PixKeyRepositoryDb) FindAccountById(id string) (*model.Account, error) {
+func (repository PixKeyRepositoryDb) FindAccountById(id string) (*model.Account, error) {
 	var account model.Account
-
 	repository.Db.Preload("Bank").First(&account, "id = ?", id)
 
 	if account.ID == "" {
@@ -65,9 +57,8 @@ func (repository *PixKeyRepositoryDb) FindAccountById(id string) (*model.Account
 	return &account, nil
 }
 
-func (repository *PixKeyRepositoryDb) FindBankById(id string) (*model.Bank, error) {
+func (repository PixKeyRepositoryDb) FindBankById(id string) (*model.Bank, error) {
 	var bank model.Bank
-
 	repository.Db.First(&bank, "id = ?", id)
 
 	if bank.ID == "" {

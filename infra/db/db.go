@@ -21,7 +21,7 @@ func init() {
 }
 
 func ConnectDB() *gorm.DB {
-	var dsn string
+	var dns string
 	var db *gorm.DB
 	var err error
 	var newLogger logger.Interface
@@ -33,13 +33,13 @@ func ConnectDB() *gorm.DB {
 	}
 
 	if env != "test" {
-		dsn = os.Getenv("dns")
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		dns = os.Getenv("dns")
+		db, err = gorm.Open(postgres.Open(dns), &gorm.Config{
 			Logger: newLogger,
 		})
 	} else {
-		dsn = os.Getenv("dns")
-		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{
+		dns = os.Getenv("dnsTest")
+		db, err = gorm.Open(sqlite.Open(dns), &gorm.Config{
 			Logger: newLogger,
 		})
 	}

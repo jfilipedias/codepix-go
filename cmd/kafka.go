@@ -8,6 +8,7 @@ import (
 
 	ckafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/jfilipedias/codepix-go/application/kafka"
+	"github.com/jfilipedias/codepix-go/infra/db"
 	"github.com/spf13/cobra"
 )
 
@@ -21,6 +22,10 @@ var kafkaCmd = &cobra.Command{
 		deliveryChan := make(chan ckafka.Event)
 		kafka.Publish("Ola Kafka", "Teste", producer, deliveryChan)
 		kafka.DeliveryReport(deliveryChan)
+
+		database := db.ConnectDB()
+		kafkaProcessor := kafka.NewKafkaProcessor(database, producer, deliveryChan)
+		kafkaProcessor.Consume()
 	},
 }
 

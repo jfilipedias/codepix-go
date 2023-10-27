@@ -2,13 +2,14 @@ package kafka
 
 import (
 	"fmt"
+	"os"
 
 	ckafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
 func NewKafkaProducer() *ckafka.Producer {
 	producer, err := ckafka.NewProducer(&ckafka.ConfigMap{
-		"bootstrap.servers": "kafka:9092",
+		"bootstrap.servers": os.Getenv("kafkaBootstrapServers"),
 	})
 
 	if err != nil {

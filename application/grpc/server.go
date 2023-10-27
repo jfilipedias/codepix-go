@@ -25,12 +25,12 @@ func StartGrpcServer(database *gorm.DB, port int) {
 	address := fmt.Sprintf("0.0.0.0:%d", port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
-		log.Fatal("Cannot start grpc server", err)
+		log.Fatal("Cannot start grpc server.", err)
 	}
 
-	log.Printf("gRPC server has been started on port %d", port)
+	log.Printf("gRPC server has been started on port %d.", port)
 	err = grpcServer.Serve(listener)
 	if err != nil {
-		log.Fatal("Cannot start grpc server", err)
+		log.Fatal("Cannot start grpc server.", err)
 	}
 }

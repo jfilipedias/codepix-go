@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	TransactionPendding  string = "pendding"
+	TransactionPending   string = "pending"
 	TransactionCompleted string = "completed"
 	TransactionError     string = "error"
 	TransactionConfirmed string = "confirmed"
@@ -44,7 +44,7 @@ func (transaction *Transaction) IsValid() error {
 		return errors.New("The amount must be greater than 0.")
 	}
 
-	if transaction.Status != TransactionPendding && transaction.Status != TransactionCompleted && transaction.Status != TransactionError && transaction.Status != TransactionConfirmed {
+	if transaction.Status != TransactionPending && transaction.Status != TransactionCompleted && transaction.Status != TransactionError && transaction.Status != TransactionConfirmed {
 		return errors.New("Invalid status.")
 	}
 
@@ -90,7 +90,7 @@ func NewTransaction(accountFrom *Account, amount float64, pixKeyTo *PixKey, desc
 		Amount:      amount,
 		PixKeyTo:    pixKeyTo,
 		Description: description,
-		Status:      TransactionPendding,
+		Status:      TransactionPending,
 	}
 
 	transaction.ID = uuid.NewV4().String()
